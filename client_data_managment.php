@@ -1,6 +1,6 @@
 <?php
 /*
- * Plugin Name:       Client Data Managment
+ * Plugin Name:       Client Data Management
  * Plugin URI:        https://example.com/plugins/client-data-managment/
  * Description:       Handle the basics with this plugin.
  * Version:           1.0.0
@@ -21,39 +21,41 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-Class Client_Data_List {
-  private $table_name;
-  private $dbv = '1.0';
-  function __construct() {
-    global $wpdb;
-    $table_name = $this->table_name = $wpdb->prefix . 'client_data_list';
+class Client_Data_List {
+    private $table_name;
+    private $dbv = '1.0';
 
-    register_activation_hook(__FILE__, [$this, 'cdm_create_database_tables']);
+    public function __construct() {
+        global $wpdb;
+        $this->table_name = $wpdb->prefix . 'client_data_list';
 
-    new Shsom\ClientDataManagment\Menu($table_name);
+        register_activation_hook(__FILE__, [$this, 'cdm_create_database_tables']);
+        add_action('plugins_loaded', [$this, 'check_db_update']);
 
-    $dbv = get_option('dbv');
-    if ($dbv != $this->dbv) {
-        $this->cdm_create_database_tables();
-        update_option('dbv', $this->dbv);
+        new Shsom\ClientDataManagment\Menu($this->table_name);
     }
-  }
 
-  function cdm_create_database_tables() {
-    global $wpdb;
-    $charset_collate = $wpdb->get_charset_collate();
-    $sql = "CREATE TABLE $this->table_name (
-        id mediumint(9) NOT NULL AUTO_INCREMENT,
-        name varchar(50) NOT NULL,
-        email varchar(50) NOT NULL,
-        -- phone varchar(15) NOT NULL,
-        -- gender varchar(10) NOT NULL,
-        PRIMARY KEY (id)
-    ) $charset_collate;";
+    public function check_db_update() {
+        $dbv = get_option('cdm_dbv');
+        if ($dbv != $this->dbv) {
+            $this->cdm_create_database_tables();
+            update_option('cdm_dbv', $this->dbv);
+        }
+    }
 
-    require_once (ABSPATH . 'wp-admin/includes/upgrade.php');
-    dbDelta($sql);
-  }
+    public function cdm_create_database_tables() {
+        global $wpdb;
+        $charset_collate = $wpdb->get_charset_collate();
+        $sql = "CREATE TABLE $this->table_name (
+            id mediumint(9) NOT NULL AUTO_INCREMENT,
+            name varchar(50) NOT NULL,
+            email varchar(50) NOT NULL,
+            PRIMARY KEY (id)
+        ) $charset_collate;";
+
+        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+        dbDelta($sql);
+    }
 }
 
 new Client_Data_List();

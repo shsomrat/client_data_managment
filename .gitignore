@@ -1,7 +1,7 @@
 # Ignore everything in the vendor directory
-/vendor/*
+# /vendor/*
 
 # Except for autoload.php
-!/vendor/autoload.php
+# !/vendor/autoload.php
 
-!/vendor/composer
+# !/vendor/composer
