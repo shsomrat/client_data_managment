@@ -3,3 +3,5 @@
 
 # Except for autoload.php
 !/vendor/autoload.php
+
+!/vendor/composer
