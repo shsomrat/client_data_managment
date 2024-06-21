@@ -1,0 +1,5 @@
+# Ignore everything in the vendor directory
+/vendor/*
+
+# Except for autoload.php
+!/vendor/autoload.php
